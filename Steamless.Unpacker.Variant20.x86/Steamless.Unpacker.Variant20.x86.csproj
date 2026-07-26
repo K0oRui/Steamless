@@ -6,7 +6,7 @@
     <AssemblyName>Steamless.Unpacker.Variant20.x86</AssemblyName>
     <AssemblyVersion>1.0.0.3</AssemblyVersion>
     <FileVersion>1.0.0.3</FileVersion>
-    <Description>Steamless SteamStub Variant 2.0 (x86) Unpacker</Description>
+    <Description>Steamless SteamStub Variant v2.0 (x86) Unpacker</Description>
   </PropertyGroup>
 
   <ItemGroup>
