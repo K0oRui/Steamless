@@ -25,9 +25,12 @@
 
 namespace Steamless
 {
+    using Microsoft.Extensions.DependencyInjection;
+    using Model;
+    using Steamless.API;
+    using Steamless.API.Services;
     using System;
-    using System.IO;
-    using System.Reflection;
+    using ViewModel;
 
     /// <summary>
     /// Interaction logic for App.xaml
@@ -35,45 +38,17 @@ namespace Steamless
     public partial class App
     {
         /// <summary>
-        /// Default Constructor
+        /// Global DI service provider. Built once at startup.
         /// </summary>
+        public static IServiceProvider Services { get; private set; }
+
         public App()
         {
-            // Override the assembly resolve event..
-            AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
-        }
-
-        /// <summary>
-        /// Assembly resolve override to allow loading of embedded modules.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        private static Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            // Obtain the name of the assembly being loaded..
-            var name = args.Name.Contains(",") ? args.Name.Substring(0, args.Name.IndexOf(",", StringComparison.InvariantCultureIgnoreCase)) : args.Name.Replace(".dll", "");
-
-            // Ignore resource assembly loading..
-            if (name.ToLower().EndsWith(".resources"))
-                return null;
-
-            // Build a full path to the possible embedded file..
-            var fullName = $"{Assembly.GetExecutingAssembly().EntryPoint.DeclaringType?.Namespace}.Embedded.{new AssemblyName(args.Name).Name}.dll";
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(fullName))
-            {
-                // If not embedded try to load from the plugin folder..
-                if (stream == null)
-                {
-                    var file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins", name + ".dll");
-                    return File.Exists(file) ? Assembly.Load(File.ReadAllBytes(file)) : null;
-                }
-
-                // Read and load the embedded resource..
-                var data = new byte[stream.Length];
-                stream.Read(data, 0, (int)stream.Length);
-                return Assembly.Load(data);
-            }
+            Services = new ServiceCollection()
+                .AddSingleton<IDataService, DataService>()
+                .AddSingleton<LoggingService>()
+                .AddSingleton<MainWindowViewModel>()
+                .BuildServiceProvider();
         }
     }
 }
