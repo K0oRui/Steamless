@@ -244,7 +244,7 @@ namespace Steamless.API.PE64
         /// <returns></returns>
         public byte[] GetSectionData(int index)
         {
-            if (index < 0 || index > this.Sections.Count)
+            if (index < 0 || index >= this.Sections.Count)
                 return null;
 
             return this.SectionData[index];
